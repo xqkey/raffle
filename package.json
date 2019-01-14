@@ -1,0 +1,61 @@
+{
+  "name": "raffle",
+  "productName": "raffle",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/main.js",
+  "repository": {
+    "private": true
+  },
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": "kobato",
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "raffle"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "bootstrap": "^4.2.1",
+    "electron-squirrel-startup": "^1.0.0",
+    "jquery": "^3.3.1",
+    "popper.js": "^1.14.6"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.30",
+    "@electron-forge/maker-deb": "^6.0.0-beta.30",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.30",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.30",
+    "@electron-forge/maker-zip": "^6.0.0-beta.30",
+    "electron": "4.0.1"
+  }
+}

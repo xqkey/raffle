@@ -6,17 +6,17 @@
     <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
   </head>
   <body>
-    <div class="test" align="center">
+    <div class="container" align="center">
       <h2>Member</h2>
     </div>
-    <div class="test">
-      <button type="button" id="button_insert_member">添加</button> 
-      <button type="button">修改</button> 
-      <button type="button">删除</button>
-      <button type="button">导入</button>
+    <div class="container" align="center">
+      <button type="button" id="button_insert_member" class="btn btn-outline-primary">添加</button> 
+      <button type="button" class="btn btn-outline-primary">修改</button> 
+      <button type="button" class="btn btn-outline-primary">删除</button>
+      <button type="button" class="btn btn-outline-primary">导入</button>
     </div>
-    <div class="test">
-      <table id="table_member" border="2">
+    <div class="table-responsive">
+      <table id="table_member" class="table table-bordered">
         <thead>
           <tr>
             <th>编号</th>
@@ -25,13 +25,23 @@
         </thead>
       </table>
     </div>
+    <div class="container" align="center">
+        <ul class="pagination" id="ul_pagination">
+            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+        </ul>
+    </div>
     <dialog id="dialog_insert_member">
-      <div class="test" align="center">
-        姓名: <input type="text" id="input_member_name"/>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text">姓名:</span>
+        </div>
+        <input type="text" id="input_member_name"/>
       </div>
-      <div class="test" align="center">
-        <button type="button" id="button_name_insert">确定</button>
-        <button type="button" id="button_name_cancel">取消</button>
+      <div class="container" align="center">
+        <button type="button" id="button_name_insert" class="btn btn-outline-primary">确定</button>
+        <button type="button" id="button_name_cancel" class="btn btn-outline-primary">取消</button>
       </div>
     </dialog> 
     <script type="text/javascript">

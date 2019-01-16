@@ -53,17 +53,31 @@ ipc.on('start_member_window', function ()
   mainWindow.loadURL(`file://${__dirname}/member.html`);
 });
 
-ipc.on('insert_member', function (event, name, num, page) 
+ipc.on('insert_query_member', function (event, name, num, page) 
 {
-  member_array.push(name);
-  console.log('[C_DEBUG] main array add:' + name);
+  if (name != "")
+  {
+    member_array.push(name);
+    console.log('[C_DEBUG] main array add:' + name);
+  }
 
   var send_arry = new Array();
   var start_pos = (page - 1) * num;
   var end_pos = start_pos + num;
+  var member_length = member_array.length;
+
+  if (member_length % num == 0)
+  {
+    send_arry.push(member_length / num);
+  }
+  else
+  {
+    send_arry.push(member_length / num + 1); 
+  }
+  
   for (var i = start_pos; i < end_pos; i++)
   {
-    if (i < member_array.length)
+    if (i < member_length)
     {
       console.log('[C_DEBUG] send array add:' + member_array[i]);
       send_arry.push(member_array[i]);
@@ -73,5 +87,6 @@ ipc.on('insert_member', function (event, name, num, page)
       break;
     }
   }
+  
   event.returnValue = send_arry; 
 });

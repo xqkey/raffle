@@ -45,7 +45,7 @@ function updateTable(input_value)
     for (var i = 1; i < arry_length; i++)
     {
         table_html += "<tr><th>";
-        table_html += (i - 1);
+        table_html += (i - 1) + (crt_page_num - 1) * dft_page_size;
         table_html += "</th><th>";
         table_html += return_arry[i];
         table_html += "</th></tr>";

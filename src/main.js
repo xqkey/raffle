@@ -53,6 +53,11 @@ ipc.on('start_member_window', function ()
   mainWindow.loadURL(`file://${__dirname}/member.html`);
 });
 
+ipc.on('member_back_mainpage', function () 
+{
+  mainWindow.loadURL(`file://${__dirname}/index.html`);
+});
+
 ipc.on('insert_query_member', function (event, name, num, page) 
 {
   if (name != "")

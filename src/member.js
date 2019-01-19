@@ -1,6 +1,8 @@
 window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
 require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
+require('../node_modules/bootstrap-table/dist/bootstrap-table.min.js');
 const insert_member = document.querySelector("#button_insert_member");
+const back_main = document.querySelector("#button_back_mainpage");
 const dialog_insert_member = document.querySelector("#dialog_insert_member");
 const name_insert = document.querySelector("#button_name_insert");
 const name_cancel = document.querySelector("#button_name_cancel");
@@ -32,27 +34,31 @@ name_cancel.addEventListener("click", function()
     document.getElementById("input_member_name").value = "";
 });
 
+back_main.addEventListener("click", function()
+{
+    ipc.send("member_back_mainpage");
+});
+
 
 function updateTable(input_value)
 {
     var return_arry = ipc.sendSync("insert_query_member", input_value, dft_page_size, crt_page_num);
 
     var table = $("#table_member");
-    table.empty();
-
-    var table_html = "<thead><tr><th>编号</th><th>姓名</th></tr></thead><tbody>";
+    table.bootstrapTable('removeAll');
     var arry_length = return_arry.length;
     for (var i = 1; i < arry_length; i++)
     {
-        table_html += "<tr><th>";
-        table_html += (i - 1) + (crt_page_num - 1) * dft_page_size;
-        table_html += "</th><th>";
-        table_html += return_arry[i];
-        table_html += "</th></tr>";
+        table.bootstrapTable('insertRow',
+            {
+                index:(i - 1),
+                row:{
+                    member_idx:(i - 1) + (crt_page_num - 1) * dft_page_size,
+                    member_name:return_arry[i]
+                }
+            } 
+        );
     }
-    table_html += "</tbody>";
-    
-    table.append(table_html);
 
     var lis = $("#ul_pagination");
     lis.empty();
@@ -98,3 +104,23 @@ function updateTable(input_value)
         }
     });
 }
+
+//========================================================
+$("#table_member").bootstrapTable(
+{
+    cache:  false,
+    clickToSelect: true,
+    
+    columns: [{
+        field: 'select_item',
+        checkbox: true
+    },{
+        field: 'member_idx',
+        title: '编号'
+    }, {
+        field: 'member_name',
+        title: '姓名'
+    }]
+});
+
+updateTable("");

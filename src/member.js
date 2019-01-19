@@ -10,7 +10,7 @@ const name_cancel = document.querySelector("#button_name_cancel");
 const ipc = require('electron').ipcRenderer
 
 let crt_page_num=1;
-let dft_page_size=10;
+let crt_page_size=10;
 
 insert_member.addEventListener("click", function()
 {
@@ -57,7 +57,7 @@ back_main.addEventListener("click", function()
 
 function updateTable(input_value)
 {
-    var return_arry = ipc.sendSync("insert_query_member", input_value, dft_page_size, crt_page_num);
+    var return_arry = ipc.sendSync("insert_query_member", input_value, crt_page_size, crt_page_num);
 
     var table = $("#table_member");
     table.bootstrapTable('removeAll');
@@ -68,7 +68,7 @@ function updateTable(input_value)
             {
                 index:(i - 1),
                 row:{
-                    member_idx:(i - 1) + (crt_page_num - 1) * dft_page_size,
+                    member_idx:(i - 1) + (crt_page_num - 1) * crt_page_size,
                     member_name:return_arry[i]
                 }
             } 
@@ -120,6 +120,12 @@ function updateTable(input_value)
     });
 }
 
+function operateFormatter(value, row, index) 
+{
+    return ['<button type="button" class="btn btn-warning">修改</button><button type="button" class="btn btn-danger">删除</button>'].join('');
+}
+    
+
 //========================================================
 $("#table_member").bootstrapTable(
 {
@@ -132,10 +138,16 @@ $("#table_member").bootstrapTable(
     },{
         field: 'member_idx',
         title: '编号'
-    }, {
+    },{
         field: 'member_name',
         title: '姓名'
+    },{
+        field: 'member_modify',
+        title: '操作', 
+        formatter: operateFormatter
     }]
+
+    
 });
 
 updateTable("");

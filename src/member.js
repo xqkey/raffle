@@ -2,6 +2,7 @@ window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
 require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
 require('../node_modules/bootstrap-table/dist/bootstrap-table.min.js');
 const insert_member = document.querySelector("#button_insert_member");
+const delete_member = document.querySelector("#button_delete_member");
 const back_main = document.querySelector("#button_back_mainpage");
 const dialog_insert_member = document.querySelector("#dialog_insert_member");
 const name_insert = document.querySelector("#button_name_insert");
@@ -14,6 +15,24 @@ let dft_page_size=10;
 insert_member.addEventListener("click", function()
 {
     dialog_insert_member.showModal();
+});
+
+delete_member.addEventListener("click", function()
+{
+    var select_array = $("#table_member").bootstrapTable('getSelections');
+
+    var arry_length = select_array.length; 
+    if (arry_length < 1 )
+    {
+        return;
+    }
+
+    for (var i = 0; i < arry_length; i++)
+    {
+        console.log(select_array[i]);
+    }
+
+    //updateTable("");
 });
 
 name_insert.addEventListener("click", function()
@@ -110,7 +129,7 @@ $("#table_member").bootstrapTable(
 {
     cache:  false,
     clickToSelect: true,
-    
+
     columns: [{
         field: 'select_item',
         checkbox: true

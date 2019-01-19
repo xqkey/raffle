@@ -95,3 +95,37 @@ ipc.on('insert_query_member', function (event, name, num, page)
   
   event.returnValue = send_arry; 
 });
+
+ipc.on('batch_delete_member', function (event, values) 
+{
+  var values_length = values.length;
+  var member_length = member_array.length;
+
+  var next_pos = values[0].member_idx;
+  var z = 0;
+  for (var i = values[0].member_idx; i < member_length; i++)
+  {
+    for (var j = next_pos; j < member_length; j++)
+    {
+      if (z < values_length && values[z].member_idx == j)
+      {
+        z++;
+      }
+      else
+      {
+        next_pos = j;
+        break;
+      }
+    }
+
+    member_array[i] = member_array[next_pos];
+    next_pos++;
+    if (next_pos < next_pos)
+    {
+      break;
+    }
+  }
+
+  member_array.length -= values_length;
+  event.returnValue = true;
+});

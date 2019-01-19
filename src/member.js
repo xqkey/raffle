@@ -27,12 +27,8 @@ delete_member.addEventListener("click", function()
         return;
     }
 
-    for (var i = 0; i < arry_length; i++)
-    {
-        console.log(select_array[i]);
-    }
-
-    //updateTable("");
+    ipc.sendSync("batch_delete_member", select_array);
+    updateTable("");
 });
 
 name_insert.addEventListener("click", function()

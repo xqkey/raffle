@@ -172,8 +172,6 @@ function editRow(index)
 $("#table_member").bootstrapTable(
 {
     cache:  false,
-    //clickToSelect: true,
-    clickEdit: true,
 
     columns: [{
         field: 'select_item',
@@ -198,11 +196,21 @@ $("#table_member").bootstrapTable(
         }
 
         $element.attr('contenteditable', true);
-        $element.blur(function() {
-            //BUG:this function may call much time
+        $element.off("blur").on("blur", function() 
+        {
             var index = $element.parent().data('index');
             var tdValue = $element.html();
+
+            if (tdValue == "")
+            {
+                console.log("send " + value + " " + tdValue);
+                $element.html(value);
+                return;
+            }
+            
+            console.log("send " + value + " " + tdValue);
             ipc.sendSync("update_single_member", index + (crt_page_num - 1) * crt_page_size, tdValue);
+            value = tdValue;
         })
     }
 });

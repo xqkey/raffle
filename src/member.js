@@ -3,10 +3,14 @@ require('../node_modules/bootstrap/dist/js/bootstrap.min.js');
 require('../node_modules/bootstrap-table/dist/bootstrap-table.min.js');
 const insert_member = document.querySelector("#button_insert_member");
 const delete_member = document.querySelector("#button_delete_member");
+const clear_member = document.querySelector("#button_clear_member");
 const back_main = document.querySelector("#button_back_mainpage");
 const dialog_insert_member = document.querySelector("#dialog_insert_member");
 const name_insert = document.querySelector("#button_name_insert");
 const name_cancel = document.querySelector("#button_name_cancel");
+const dialog_clear_member = document.querySelector("#dialog_clear_member");
+const clear_sure = document.querySelector("#button_clear_sure");
+const clear_cancel = document.querySelector("#button_clear_cancel");
 const ipc = require('electron').ipcRenderer
 
 let crt_page_num=1;
@@ -16,6 +20,7 @@ insert_member.addEventListener("click", function()
 {
     dialog_insert_member.showModal();
 });
+
 
 delete_member.addEventListener("click", function()
 {
@@ -31,6 +36,19 @@ delete_member.addEventListener("click", function()
     updateTable("");
 });
 
+
+clear_member.addEventListener("click", function()
+{
+    dialog_clear_member.showModal();
+});
+
+
+back_main.addEventListener("click", function()
+{
+    ipc.send("member_back_mainpage");
+});
+
+
 name_insert.addEventListener("click", function()
 {
     var input_value = document.getElementById("input_member_name").value;
@@ -43,18 +61,32 @@ name_insert.addEventListener("click", function()
     document.getElementById("input_member_name").value = "";
 });
 
+
 name_cancel.addEventListener("click", function()
 {
     dialog_insert_member.close();
     document.getElementById("input_member_name").value = "";
 });
 
-back_main.addEventListener("click", function()
+
+clear_sure.addEventListener("click", function()
 {
-    ipc.send("member_back_mainpage");
+    ipc.sendSync("clear_all_member");
+    crt_page_num = 1;
+    updateTable("");
+    dialog_clear_member.close();
 });
 
 
+clear_cancel.addEventListener("click", function()
+{
+    dialog_clear_member.close();
+});
+
+
+
+
+//===================================FUNCTION===========================================
 function updateTable(input_value)
 {
     var return_arry = ipc.sendSync("insert_query_member", input_value, crt_page_size, crt_page_num);
@@ -120,17 +152,28 @@ function updateTable(input_value)
     });
 }
 
+
 function operateFormatter(value, row, index) 
 {
-    return ['<button type="button" class="btn btn-warning">修改</button><button type="button" class="btn btn-danger">删除</button>'].join('');
+    return ["<button type='button' class='btn btn-danger'>删除</button>"].join('');
 }
+
+
+function editRow(index)
+{
+}
+
+
+
+
     
 
-//========================================================
+//================================MAIN=====================================
 $("#table_member").bootstrapTable(
 {
     cache:  false,
-    clickToSelect: true,
+    //clickToSelect: true,
+    clickEdit: true,
 
     columns: [{
         field: 'select_item',
@@ -140,14 +183,28 @@ $("#table_member").bootstrapTable(
         title: '编号'
     },{
         field: 'member_name',
-        title: '姓名'
+        title: '姓名'  
     },{
         field: 'member_modify',
-        title: '操作', 
+        title: '操作',
         formatter: operateFormatter
-    }]
+    }],
 
-    
+    onDblClickCell: function(field, value, row, $element) 
+    {
+        if (field != 'member_name') 
+        {
+            return;
+        }
+
+        $element.attr('contenteditable', true);
+        $element.blur(function() {
+            //BUG:this function may call much time
+            var index = $element.parent().data('index');
+            var tdValue = $element.html();
+            ipc.sendSync("update_single_member", index + (crt_page_num - 1) * crt_page_size, tdValue);
+        })
+    }
 });
 
 updateTable("");

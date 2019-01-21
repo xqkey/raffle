@@ -129,3 +129,17 @@ ipc.on('batch_delete_member', function (event, values)
   member_array.length -= values_length;
   event.returnValue = true;
 });
+
+
+ipc.on('clear_all_member', function (event) 
+{
+  member_array.length = 0;
+  event.returnValue = true;
+});
+
+
+ipc.on('update_single_member', function (event, index, value) 
+{
+  member_array[index] = value;
+  event.returnValue = true;
+});

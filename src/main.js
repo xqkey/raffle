@@ -147,19 +147,55 @@ ipc.on('update_single_member', function (event, index, value)
 
 ipc.on('open_output_directory_dialog', function (event) 
 {
-  var electron = require('electron');
-  var dialog = electron.dialog;
+  let member_length = member_array.length;
+  if (member_length == 0)
+  {
+    return;
+  }
+
+  let electron = require('electron');
+  let dialog = electron.dialog;
   dialog.showOpenDialog(
     {
       properties: ['openDirectory']
-    }, 
+    },
     function (files) 
     {
-      console.log(files);
-      //send show process bar 0%
-      //out put file and send
-      //send show process bar 100%
-      //send off process bar
-      event.returnValue = true;
+      console.log('[C_DEBUG] catch file:' + files);
+      if (files[0] == "undefined")
+      {
+        return;
+      }
+
+      let path = files[0] + '\\raffle_dft_data.csv';
+      console.log('[C_DEBUG] start output file:' + path);
+      let fs = require('fs');
+      if (fs.existsSync(path))
+      {
+        fs.unlinkSync(path);
+      }
+      
+      let file_buff = '';
+      for (let i = 0; i < member_length; i++)
+      {
+        file_buff += member_array[i];
+        file_buff += "\n";
+      }
+      
+      fs.writeFile(
+        path,
+        file_buff,
+        function(err) {
+          if (err)
+          {
+            event.sender.send('show_output_member_processbar', 100, false);
+            return console.error(err);
+          }
+
+          event.sender.send('show_output_member_processbar', 100, true);
+          console.log("[C_DEBUG] output file finish:" + path)}
+      );
+
+      event.sender.send('show_output_member_processbar', 0, true);
     });
 });

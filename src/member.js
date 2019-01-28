@@ -13,6 +13,7 @@ const dialog_clear_member = document.querySelector("#dialog_clear_member");
 const clear_sure = document.querySelector("#button_clear_sure");
 const clear_cancel = document.querySelector("#button_clear_cancel");
 const dialog_output_member = document.querySelector("#dialog_output_member");
+const processbar_sure = document.querySelector("#button_processbar_sure");
 const ipc = require('electron').ipcRenderer
 
 let crt_page_num=1;
@@ -47,11 +48,7 @@ clear_member.addEventListener("click", function()
 
 output_member.addEventListener("click", function()
 {
-    var need_show = ipc.sendSync('open_output_directory_dialog');
-    if (need_show)
-    {
-        dialog_output_member.showModal();
-    }
+    ipc.send('open_output_directory_dialog');
 });
 
 
@@ -95,6 +92,44 @@ clear_cancel.addEventListener("click", function()
     dialog_clear_member.close();
 });
 
+
+processbar_sure.addEventListener("click", function()
+{
+    dialog_output_member.close();
+    $("#progress_bar_member").removeClass("progress-bar bg-danger");
+    $("#progress_bar_member").addClass("progress-bar progress-bar-striped progress-bar-animated");
+    $("#button_processbar_sure").hide();
+    $("#p_processbar_content").text("正在导出，请耐心等待...");
+});
+
+
+ipc.on('show_output_member_processbar', function(event, percent, is_error)
+{
+    if (!is_error)
+    {
+        $("#progress_bar_member").removeClass("progress-bar progress-bar-striped progress-bar-animated");
+        $("#progress_bar_member").addClass("progress-bar bg-danger");
+        $("#progress_bar_member").css('width', percent + '%');
+        $("#button_processbar_sure").show();
+        $("#p_processbar_content").text("导出失败");
+        return;
+    }
+
+    if (percent == 0)
+    {
+        $("#button_processbar_sure").hide();
+        $("#progress_bar_member").css('width', percent + '%');
+        dialog_output_member.showModal();
+    }
+
+    if (percent == 100)
+    {
+        $("#p_processbar_content").text("导出成功");
+        $("#button_processbar_sure").show();
+    }
+
+    $("#progress_bar_member").css('width', percent + '%');
+});
 
 
 
@@ -194,7 +229,7 @@ $("#table_member").bootstrapTable(
         formatter: operateFormatter
     }],
 
-    onDblClickCell: function(field, value, row, $element) 
+    onClickCell: function(field, value, row, $element) 
     {
         if (field != 'member_name') 
         {

@@ -52,9 +52,12 @@
     </dialog>
     <dialog id="dialog_output_member">
         <div class="container" align="center">
-          <p>正在导出，请耐心等待...</p>
+          <p id="p_processbar_content">正在导出，请耐心等待...</p>
           <div class="progress">
-            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
+            <div class="progress-bar progress-bar-striped progress-bar-animated" id="progress_bar_member" style="width:0%"></div>
+          </div>
+          <div class="container" align="center">
+            <button type="button" id="button_processbar_sure" class="btn btn-outline-primary">确定</button>
           </div>
         </div>
     </dialog>

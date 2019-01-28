@@ -14,9 +14,8 @@
       <button type="button" id="button_insert_member" class="btn btn-outline-primary">添加</button> 
       <button type="button" id="button_delete_member" class="btn btn-outline-primary">删除</button>
       <button type="button" id="button_clear_member" class="btn btn-outline-primary">清空</button>
-      <button type="button" class="btn btn-outline-primary">查找</button>
       <button type="button" class="btn btn-outline-primary">导入</button>
-      <button type="button" class="btn btn-outline-primary">导出</button>
+      <button type="button" id="button_output_member" class="btn btn-outline-primary">导出</button>
       <button type="button" class="btn btn-outline-primary">保存</button>
       <button type="button" id="button_back_mainpage" class="btn btn-outline-primary">返回</button>
     </div>
@@ -50,7 +49,15 @@
         <button type="button" id="button_clear_sure" class="btn btn-outline-primary">确定</button>
         <button type="button" id="button_clear_cancel" class="btn btn-outline-primary">取消</button>
       </div>
-    </dialog>  
+    </dialog>
+    <dialog id="dialog_output_member">
+        <div class="container" align="center">
+          <p>正在导出，请耐心等待...</p>
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" style="width:50%"></div>
+          </div>
+        </div>
+    </dialog>
     <script type="text/javascript">
       require('./member.js')
     </script>

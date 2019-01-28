@@ -143,3 +143,23 @@ ipc.on('update_single_member', function (event, index, value)
   member_array[index] = value;
   event.returnValue = true;
 });
+
+
+ipc.on('open_output_directory_dialog', function (event) 
+{
+  var electron = require('electron');
+  var dialog = electron.dialog;
+  dialog.showOpenDialog(
+    {
+      properties: ['openDirectory']
+    }, 
+    function (files) 
+    {
+      console.log(files);
+      //send show process bar 0%
+      //out put file and send
+      //send show process bar 100%
+      //send off process bar
+      event.returnValue = true;
+    });
+});

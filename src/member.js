@@ -4,6 +4,7 @@ require('../node_modules/bootstrap-table/dist/bootstrap-table.min.js');
 const insert_member = document.querySelector("#button_insert_member");
 const delete_member = document.querySelector("#button_delete_member");
 const clear_member = document.querySelector("#button_clear_member");
+const output_member = document.querySelector("#button_output_member");
 const back_main = document.querySelector("#button_back_mainpage");
 const dialog_insert_member = document.querySelector("#dialog_insert_member");
 const name_insert = document.querySelector("#button_name_insert");
@@ -11,6 +12,7 @@ const name_cancel = document.querySelector("#button_name_cancel");
 const dialog_clear_member = document.querySelector("#dialog_clear_member");
 const clear_sure = document.querySelector("#button_clear_sure");
 const clear_cancel = document.querySelector("#button_clear_cancel");
+const dialog_output_member = document.querySelector("#dialog_output_member");
 const ipc = require('electron').ipcRenderer
 
 let crt_page_num=1;
@@ -40,6 +42,16 @@ delete_member.addEventListener("click", function()
 clear_member.addEventListener("click", function()
 {
     dialog_clear_member.showModal();
+});
+
+
+output_member.addEventListener("click", function()
+{
+    var need_show = ipc.sendSync('open_output_directory_dialog');
+    if (need_show)
+    {
+        dialog_output_member.showModal();
+    }
 });
 
 
@@ -157,12 +169,6 @@ function operateFormatter(value, row, index)
 {
     return ["<button type='button' class='btn btn-danger'>删除</button>"].join('');
 }
-
-
-function editRow(index)
-{
-}
-
 
 
 

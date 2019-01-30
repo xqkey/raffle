@@ -199,15 +199,26 @@ function updateTable(input_value)
     });
 }
 
-
 function operateFormatter(value, row, index) 
 {
-    return ["<button type='button' class='btn btn-danger'>删除</button>"].join('');
+    return ["<button type='button' class='btn btn-danger' \
+    onclick='member_script.deleteRow("+row.member_idx+", \""+row.member_name+"\")'>删除</button>"].join('');
 }
 
+module.exports = {
+    deleteRow : (idx, name) =>
+    {
+        let memeber = new Object();
+        memeber.member_idx = idx;
+        memeber.member_name = name;
 
+        let delete_arry = new Array();
+        delete_arry[0] = memeber;
 
-    
+        ipc.sendSync("batch_delete_member", delete_arry);
+        updateTable("");
+    }
+}     
 
 //================================MAIN=====================================
 $("#table_member").bootstrapTable(

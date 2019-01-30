@@ -162,8 +162,9 @@ ipc.on('open_output_directory_dialog', function (event)
     function (files) 
     {
       console.log('[C_DEBUG] catch file:' + files);
-      if (files[0] == "undefined")
+      if (files[0] === undefined)
       {
+        console.log('[C_DEBUG] undefined file:' + files);
         return;
       }
 
@@ -197,5 +198,37 @@ ipc.on('open_output_directory_dialog', function (event)
       );
 
       event.sender.send('show_output_member_processbar', 0, true);
+    });
+});
+
+
+ipc.on('open_input_directory_dialog', function (event) 
+{
+  let electron = require('electron');
+  let dialog = electron.dialog;
+  dialog.showOpenDialog(
+    {
+      filters: [
+        { name: 'Custom File Type', extensions: ['csv'] }
+      ],
+      properties: ['openFile']
+    },
+    function (file) 
+    {
+      console.log('[C_DEBUG] get file:' + file);
+      if (file === undefined)
+      {
+        console.log('[C_DEBUG] undefined file:' + file);
+        return;
+      }
+
+      let fs = require('fs');
+      if (fs.existsSync(path))
+      {
+        console.log('[C_DEBUG] not exist file:' + file);
+        return;
+      }
+
+      
     });
 });

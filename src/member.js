@@ -4,6 +4,7 @@ require('../node_modules/bootstrap-table/dist/bootstrap-table.min.js');
 const insert_member = document.querySelector("#button_insert_member");
 const delete_member = document.querySelector("#button_delete_member");
 const clear_member = document.querySelector("#button_clear_member");
+const input_member = document.querySelector("#button_input_member");
 const output_member = document.querySelector("#button_output_member");
 const back_main = document.querySelector("#button_back_mainpage");
 const dialog_insert_member = document.querySelector("#dialog_insert_member");
@@ -43,6 +44,12 @@ delete_member.addEventListener("click", function()
 clear_member.addEventListener("click", function()
 {
     dialog_clear_member.showModal();
+});
+
+
+input_member.addEventListener("click", function()
+{
+    ipc.send('open_input_directory_dialog');
 });
 
 

@@ -53,9 +53,14 @@ ipc.on('start_member_window', function ()
   mainWindow.loadURL(`file://${__dirname}/member.html`);
 });
 
-ipc.on('member_back_mainpage', function () 
+ipc.on('back_mainpage', function () 
 {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
+});
+
+ipc.on('start_flowControl_window', function () 
+{
+  mainWindow.loadURL(`file://${__dirname}/flowControl.html`);
 });
 
 ipc.on('insert_query_member', function (event, name, num, page) 
@@ -226,7 +231,6 @@ ipc.on('open_input_directory_dialog', function (event)
       let fs = require('fs');
       let file_buff = fs.readFileSync(file.toString());
       let file_buff_array = file_buff.toString().split("\n");
-      console.log(file_buff_array);
 
       let length = file_buff_array.length;
       if (length == 0)

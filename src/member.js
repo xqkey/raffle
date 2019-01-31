@@ -61,7 +61,7 @@ output_member.addEventListener("click", function()
 
 back_main.addEventListener("click", function()
 {
-    ipc.send("member_back_mainpage");
+    ipc.send("back_mainpage");
 });
 
 

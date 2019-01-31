@@ -237,6 +237,11 @@ ipc.on('open_input_directory_dialog', function (event)
       length--;
       for (let i = 0; i < length; i++)
       {
+        if(file_buff_array[i] == "" || file_buff_array[i] == "\r")
+        {
+          continue;
+        }
+
         member_array.push(file_buff_array[i]);
       }
 

@@ -194,7 +194,8 @@ ipc.on('open_output_directory_dialog', function (event)
           }
 
           event.sender.send('show_output_member_processbar', 100, true);
-          console.log("[C_DEBUG] output file finish:" + path)}
+          console.log("[C_DEBUG] output file finish:" + path);
+        }
       );
 
       event.sender.send('show_output_member_processbar', 0, true);
@@ -223,12 +224,22 @@ ipc.on('open_input_directory_dialog', function (event)
       }
 
       let fs = require('fs');
-      if (fs.existsSync(path))
+      let file_buff = fs.readFileSync(file.toString());
+      let file_buff_array = file_buff.toString().split("\n");
+      console.log(file_buff_array);
+
+      let length = file_buff_array.length;
+      if (length == 0)
       {
-        console.log('[C_DEBUG] not exist file:' + file);
         return;
       }
 
-      
+      length--;
+      for (let i = 0; i < length; i++)
+      {
+        member_array.push(file_buff_array[i]);
+      }
+
+      event.sender.send('input_member_update_table');
     });
 });

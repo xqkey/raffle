@@ -139,6 +139,11 @@ ipc.on('show_output_member_processbar', function(event, percent, is_error)
 });
 
 
+ipc.on('input_member_update_table', function(event)
+{
+    updateTable("");
+});
+
 
 //===================================FUNCTION===========================================
 function updateTable(input_value)

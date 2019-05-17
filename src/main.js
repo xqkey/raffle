@@ -167,7 +167,7 @@ ipc.on('open_output_directory_dialog', function (event)
     function (files) 
     {
       console.log('[C_DEBUG] catch file:' + files);
-      if (files[0] === undefined)
+      if (typeof(files) == "undefined")
       {
         console.log('[C_DEBUG] undefined file:' + files);
         return;
@@ -222,7 +222,7 @@ ipc.on('open_input_directory_dialog', function (event)
     function (file) 
     {
       console.log('[C_DEBUG] get file:' + file);
-      if (file === undefined)
+      if (typeof(file) == "undefined")
       {
         console.log('[C_DEBUG] undefined file:' + file);
         return;

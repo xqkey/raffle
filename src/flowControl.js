@@ -23,9 +23,9 @@ button_insert_sure.addEventListener("click", function()
     let num = $("#input_round_maxnum").val();
     let type = $("#input_round_type").val();
 
-    if (name == "")
+    if (name != "" || num != 0)
     {
-        return;
+      updateTable(name, num, type, true);
     }
 
     dialog_insert_round.close();
@@ -38,6 +38,9 @@ button_insert_sure.addEventListener("click", function()
 button_insert_cancel.addEventListener("click", function()
 {
     dialog_insert_round.close();
+    $("#input_round_name").val('');
+    $("#input_round_maxnum").val('');
+    $("#input_round_type").val('default');
 });
 
 
@@ -48,16 +51,72 @@ back_main.addEventListener("click", function()
 
 
 //===================================FUNCTION===========================================
-function isNull( str )
+function updateTable(name, num, type, need_add)
 {
-    if ( str == "" ) return true;
-    var regu = "^[ ]+$";
-    var re = new RegExp(regu);
-    return re.test(str);
-}
+  var return_arry = ipc.sendSync("insert_round_info", name, num, type, crt_page_size, crt_page_num, need_add);
 
-function updateTable(name, num, type)
-{
+  var table = $("#table_flowControl");
+  table.bootstrapTable('removeAll');
+  var arry_length = return_arry.length;
+  for (var i = 1; i < arry_length; i++)
+  {
+      table.bootstrapTable('insertRow',
+          {
+              index:(i - 1),
+              row:{
+                  round_id:(i - 1) + (crt_page_num - 1) * crt_page_size,
+                  round_name:return_arry[i].name,
+                  round_num:return_arry[i].num,
+                  round_type:return_arry[i].type,
+                  round_state:return_arry[i].state
+              }
+          }
+      );
+  }
+
+  var lis = $("#ul_pagination");
+  lis.empty();
+
+  var max_page_num = return_arry[0];
+  var lis_html = "<li class=\"page-item\" id=\"li_pre\"><a class=\"page-link\" href=\"#\">上一页</a></li>";
+  for (var i = 1; i <= max_page_num; i++)
+  {
+      if (i == crt_page_num)
+      {
+          lis_html += "<li class=\"page-item active\" id=\"li_";
+      }
+      else
+      {
+          lis_html += "<li class=\"page-item\" id=\"li_";
+      }
+      lis_html += i;
+      lis_html += "\"><a class=\"page-link\" href=\"#\">";
+      lis_html += i;
+      lis_html += "</a></li>";
+  }
+  lis_html += "<li class=\"page-item\" id=\"li_next\"><a class=\"page-link\" href=\"#\">下一页</a></li>";
+
+  lis.append(lis_html);
+
+  $("#li_pre").click(function()
+  {
+      var tmp_num = crt_page_num - 1;
+      if (tmp_num >= 1)
+      {
+          crt_page_num = tmp_num;
+          updateTable("", 0, "default", false);
+      }
+  });
+
+  $("#li_next").click(function()
+  {
+      var tmp_num = crt_page_num + 1;
+      if (tmp_num <= ($("#ul_pagination li").length - 2))
+      {
+          crt_page_num = tmp_num;
+          updateTable("", 0, "default", false);
+      }
+  });
 }
 
 
@@ -65,7 +124,7 @@ function updateTable(name, num, type)
 $("#table_flowControl").bootstrapTable(
     {
         cache:  false,
-    
+
         columns: [{
             field: 'select_item',
             checkbox: true
@@ -74,13 +133,13 @@ $("#table_flowControl").bootstrapTable(
             title: '编号'
         },{
             field: 'round_name',
-            title: '奖名' 
+            title: '奖名'
         },{
-            field: 'round_maxnum',
-            title: '总人数'  
+            field: 'round_num',
+            title: '总人数'
         },{
             field: 'round_type',
-            title: '抽奖类型'  
+            title: '抽奖类型'
         },{
             field: 'round_state',
             title: '状态'

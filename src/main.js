@@ -6,6 +6,7 @@ if (require('electron-squirrel-startup')) {
 
 let mainWindow;
 let member_array = new Array();
+let round_array = new Array();
 
 const createWindow = () => {
   mainWindow = new BrowserWindow({
@@ -48,22 +49,22 @@ app.on('activate', () => {
 /*********************** Self Logic ******************************/
 const ipc = require('electron').ipcMain;
 
-ipc.on('start_member_window', function () 
+ipc.on('start_member_window', function ()
 {
   mainWindow.loadURL(`file://${__dirname}/member.html`);
 });
 
-ipc.on('back_mainpage', function () 
+ipc.on('back_mainpage', function ()
 {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 });
 
-ipc.on('start_flowControl_window', function () 
+ipc.on('start_flowControl_window', function ()
 {
   mainWindow.loadURL(`file://${__dirname}/flowControl.html`);
 });
 
-ipc.on('insert_query_member', function (event, name, num, page) 
+ipc.on('insert_query_member', function (event, name, num, page)
 {
   if (name != "")
   {
@@ -82,9 +83,9 @@ ipc.on('insert_query_member', function (event, name, num, page)
   }
   else
   {
-    send_arry.push(member_length / num + 1); 
+    send_arry.push(member_length / num + 1);
   }
-  
+
   for (var i = start_pos; i < end_pos; i++)
   {
     if (i < member_length)
@@ -97,11 +98,11 @@ ipc.on('insert_query_member', function (event, name, num, page)
       break;
     }
   }
-  
-  event.returnValue = send_arry; 
+
+  event.returnValue = send_arry;
 });
 
-ipc.on('batch_delete_member', function (event, values) 
+ipc.on('batch_delete_member', function (event, values)
 {
   var values_length = values.length;
   var member_length = member_array.length;
@@ -136,21 +137,21 @@ ipc.on('batch_delete_member', function (event, values)
 });
 
 
-ipc.on('clear_all_member', function (event) 
+ipc.on('clear_all_member', function (event)
 {
   member_array.length = 0;
   event.returnValue = true;
 });
 
 
-ipc.on('update_single_member', function (event, index, value) 
+ipc.on('update_single_member', function (event, index, value)
 {
   member_array[index] = value;
   event.returnValue = true;
 });
 
 
-ipc.on('open_output_directory_dialog', function (event) 
+ipc.on('open_output_directory_dialog', function (event)
 {
   let member_length = member_array.length;
   if (member_length == 0)
@@ -164,7 +165,7 @@ ipc.on('open_output_directory_dialog', function (event)
     {
       properties: ['openDirectory']
     },
-    function (files) 
+    function (files)
     {
       console.log('[C_DEBUG] catch file:' + files);
       if (typeof(files) == "undefined")
@@ -180,14 +181,14 @@ ipc.on('open_output_directory_dialog', function (event)
       {
         fs.unlinkSync(path);
       }
-      
+
       let file_buff = '';
       for (let i = 0; i < member_length; i++)
       {
         file_buff += member_array[i];
         file_buff += "\n";
       }
-      
+
       fs.writeFile(
         path,
         file_buff,
@@ -208,7 +209,7 @@ ipc.on('open_output_directory_dialog', function (event)
 });
 
 
-ipc.on('open_input_directory_dialog', function (event) 
+ipc.on('open_input_directory_dialog', function (event)
 {
   let electron = require('electron');
   let dialog = electron.dialog;
@@ -219,7 +220,7 @@ ipc.on('open_input_directory_dialog', function (event)
       ],
       properties: ['openFile']
     },
-    function (file) 
+    function (file)
     {
       console.log('[C_DEBUG] get file:' + file);
       if (typeof(file) == "undefined")
@@ -251,4 +252,51 @@ ipc.on('open_input_directory_dialog', function (event)
 
       event.sender.send('input_member_update_table');
     });
+});
+
+
+//=========================================Flow control===========================================
+ipc.on('insert_round_info', function (event, name, num, type, page_size, page_num, need_add)
+{
+  if (need_add == true)
+  {
+    let one_round = {};
+    one_round.name = name;
+    one_round.num = num;
+    one_round.type = type;
+    one_round.state = false;
+    round_array.push(one_round);
+    console.log('[C_DEBUG] round array add:' + name);
+  }
+
+  let send_arry = new Array();
+  let start_pos = (page_num - 1) * page_size;
+  let end_pos = start_pos + page_size;
+  let round_length = round_array.length;
+
+  console.log('[C_DEBUG]:' + round_length + ' ' + page_size + ' ' + page_num + ' ' + start_pos + ' ' + end_pos);
+
+  if (round_length % page_size == 0)
+  {
+    send_arry.push(round_length / page_size);
+  }
+  else
+  {
+    send_arry.push(round_length / page_size + 1);
+  }
+
+  for (var i = start_pos; i < end_pos; i++)
+  {
+    if (i < round_length)
+    {
+      console.log('[C_DEBUG] send round array add:' + round_array[i]);
+      send_arry.push(round_array[i]);
+    }
+    else
+    {
+      break;
+    }
+  }
+
+  event.returnValue = send_arry;
 });

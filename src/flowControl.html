@@ -12,8 +12,8 @@
     </div>
     <div class="container" align="center">
       <button type="button" id='button_insert_round' class="btn btn-outline-primary">添加</button> 
-      <button type="button" class="btn btn-outline-primary">删除</button>
-      <button type="button" class="btn btn-outline-primary">清空</button>
+      <button type="button" id="button_delete_round" class="btn btn-outline-primary">删除</button>
+      <button type="button" id="button_clear_round" class="btn btn-outline-primary">清空</button>
       <button type="button" id='button_back_mainpage' class="btn btn-outline-primary">返回</button>
     </div>
     <div class="table-responsive">
@@ -38,25 +38,35 @@
                 <input type="text" id="input_round_name"/>
             </div>
             <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">人数:</span>
-                </div>
-                <input type="number" id="input_round_maxnum"/>
+              <div class="input-group-prepend">
+                  <span class="input-group-text">奖品名:</span>
+              </div>
+              <input type="text" id="input_round_prize"/>
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text">类型:</span>
+                    <span class="input-group-text">总人数:</span>
                 </div>
-                <select id="input_round_type">
-                    <option value ="default">默认</option>
-                    <option value ="all">全抽</option>
-                    <option value ="single">单抽</option>
-                </select>
+                <input type="number" id="input_round_num"/>
+            </div>
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                  <span class="input-group-text">单次人数:</span>
+              </div>
+              <input type="number" id="input_round_once_num"/>
             </div>
             <button type="button" id="button_insert_sure" class="btn btn-outline-primary">确定</button>
             <button type="button" id="button_insert_cancel" class="btn btn-outline-primary">取消</button>
         </div>
       </dialog>
+      <dialog id="dialog_clear_round">
+        <div class="container" align="center">
+          <p>是否确认删除所有数据？</p>
+          <button type="button" id="button_clear_sure" class="btn btn-outline-primary">确定</button>
+          <button type="button" id="button_clear_cancel" class="btn btn-outline-primary">取消</button>
+        </div>
+      </dialog>
+      <dialog id="dialog_output_member">
     <script type="text/javascript">
         let flowControl_script = require('./flowControl.js');
     </script>

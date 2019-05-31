@@ -49,6 +49,11 @@ app.on('activate', () => {
 /*********************** Self Logic ******************************/
 const ipc = require('electron').ipcMain;
 
+ipc.on('start_raffle_window', function ()
+{
+  mainWindow.loadURL(`file://${__dirname}/raffle.html`);
+});
+
 ipc.on('start_member_window', function ()
 {
   mainWindow.loadURL(`file://${__dirname}/member.html`);
@@ -256,15 +261,16 @@ ipc.on('open_input_directory_dialog', function (event)
 
 
 //=========================================Flow control===========================================
-ipc.on('insert_round_info', function (event, name, num, type, page_size, page_num, need_add)
+ipc.on('insert_round_info', function (event, name, prize_name, num, once_num, page_size, page_num, need_add)
 {
   if (need_add == true)
   {
     let one_round = {};
     one_round.name = name;
+    one_round.prize_name = prize_name;
     one_round.num = num;
-    one_round.type = type;
-    one_round.state = false;
+    one_round.once_num = once_num;
+    one_round.state = 0;
     round_array.push(one_round);
     console.log('[C_DEBUG] round array add:' + name);
   }
@@ -273,8 +279,6 @@ ipc.on('insert_round_info', function (event, name, num, type, page_size, page_nu
   let start_pos = (page_num - 1) * page_size;
   let end_pos = start_pos + page_size;
   let round_length = round_array.length;
-
-  console.log('[C_DEBUG]:' + round_length + ' ' + page_size + ' ' + page_num + ' ' + start_pos + ' ' + end_pos);
 
   if (round_length % page_size == 0)
   {
@@ -299,4 +303,70 @@ ipc.on('insert_round_info', function (event, name, num, type, page_size, page_nu
   }
 
   event.returnValue = send_arry;
+});
+
+
+ipc.on('batch_delete_round', function (event, values)
+{
+  let values_length = values.length;
+  let round_length = round_array.length;
+
+  let next_pos = values[0];
+  let z = 0;
+  for (let i = values[0]; i < round_length; i++)
+  {
+    for (var j = next_pos; j < round_length; j++)
+    {
+      if (z < values_length && values[z] == j)
+      {
+        z++;
+      }
+      else
+      {
+        next_pos = j;
+        break;
+      }
+    }
+
+    round_array[i] = round_array[next_pos];
+    next_pos++;
+    if (next_pos < next_pos)
+    {
+      break;
+    }
+  }
+
+  round_array.length -= values_length;
+  event.returnValue = true;
+});
+
+
+ipc.on('clear_all_round', function (event)
+{
+  round_array.length = 0;
+  event.returnValue = true;
+});
+
+
+ipc.on('get_total_remain_num', function (event)
+{
+  //TODO::when start edit raffle need change this function
+  let member_length = member_array.length;
+  let round_length = round_array.length;
+  let total_round_member_num = 0;
+  for (let i = 0; i < round_length; i++)
+  {
+    let tmp = round_array[i].num - round_array[i].state;
+    total_round_member_num += tmp
+  }
+
+  if (member_length > total_round_member_num)
+  {
+    total_round_member_num = member_length - total_round_member_num;
+    event.returnValue = total_round_member_num;
+  }
+  else
+  {
+    event.returnValue = 0;
+  }
 });

@@ -6,7 +6,15 @@ const ipc = require('electron').ipcRenderer
 
 start_raffle.addEventListener("click", function()
 {
-    ipc.send('start_raffle_window');
+    let flowNum = ipc.sendSync('get_round_array_num');
+    if (flowNum > 0)
+    {
+        ipc.sendSync('start_raffle_window');
+    }
+    else
+    {
+        alert('请先设置抽奖流程');
+    }
 });
 
 

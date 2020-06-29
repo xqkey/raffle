@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron');
+const { allowedNodeEnvironmentFlags } = require('process');
 
 if (require('electron-squirrel-startup')) {
   app.quit();
@@ -16,7 +17,7 @@ const createWindow = () => {
 
   mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.webContents.openDevTools();
-  //mainWindow.setMenu(null);
+  mainWindow.setMenu(null);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -51,7 +52,7 @@ const ipc = require('electron').ipcMain;
 
 ipc.on('start_raffle_window', function ()
 {
-  mainWindow.loadURL(`file://${__dirname}/raffle.html`);
+    mainWindow.loadURL(`file://${__dirname}/raffle.html`);
 });
 
 ipc.on('start_member_window', function ()
@@ -369,4 +370,8 @@ ipc.on('get_total_remain_num', function (event)
   {
     event.returnValue = 0;
   }
+});
+
+ipc.on('get_round_array_num', function (event) {
+  event.returnValue = round_array.length;
 });

@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-    <meta name="description" content="年会抽奖程序" />
-    <title>年会抽奖</title>
+    <meta name="description" content="抽奖程序" />
+    <title>抽奖程序</title>
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/reset.css" />
     <!-- <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.4.1/theme-chalk/index.css" /> -->
@@ -68,6 +68,7 @@
             {{buttonText}}
         </el-button>
         <el-button size="small" @click="onNext" :disabled="goOn || running">下一轮</el-button>
+        <el-button size="small" @click="onReset">全部重置</el-button>
         <el-button size="small"
                    :disabled="running"
                    type="warning"
@@ -204,6 +205,10 @@
                         this.currentAward += 1;
                     }
                 },
+                onReset: function () {
+                    localStorage.clear();
+                    location.href = 'configMember.html';
+                },
                 getRandomInt: function (min, max) {
                     min = Math.ceil(min);
                     max = Math.floor(max);
@@ -271,7 +276,7 @@
             created: function () {
                 this.awards = JSON.parse(localStorage.getItem('awards')) || [];
                 if (this.awards.length === 0) {
-                    location.href = 'setting.html';
+                    location.href = 'configMember.html';
                 }
 
                 var result = JSON.parse(localStorage.getItem('result')) || [];

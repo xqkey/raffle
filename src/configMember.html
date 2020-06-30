@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>奖项设置</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <!-- <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.4.1/theme-chalk/index.css" /> -->
+    <link rel="stylesheet" href="./js/element-ui@2.4.11/lib/theme-chalk/index.css">
+    <script src="js/polyfill.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <!-- <script src="https://cdn.bootcss.com/element-ui/2.4.1/index.js"></script> -->
+    <script src="./js/element-ui@2.4.11/lib/index.js"></script>
+    <script src="js/member.js"></script>
+    <style>
+        .el-input {
+            width: 120px;
+        }
+
+        .el-table {
+            margin-bottom: 10px;
+        }
+
+        * {
+            cursor: initial;
+        }
+
+        .awards,
+        .members {
+            width: 80%;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 30px;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        h1 span {
+            font-size: 16px;
+        }
+
+        a {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="members">
+            <h1>参与人员列表(共{{memberSource.length}}人)</h1>
+            <el-table :data="memberSource" style="width: 100%" stripe>
+                <el-table-column :prop="item.prop" :label="item.label" width="180" v-for="(item, index) in memberColumns" :key="index">
+                    <template slot-scope="scope">
+                        <div>
+                            <div v-if="scope.row.editing[item.prop]">
+                                <el-input size="mini" v-model="scope.row[item.prop]" @blur="onSaveCell(scope.row, item.prop)"></el-input>
+                            </div>
+                            <div v-else @dblclick="onEditCell(scope.row, item.prop, $event)">
+                                {{ scope.row[item.prop] || '(请填写)' }}
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="address" label="操作">
+                    <template slot-scope="scope">
+                        <el-button size="small" @click="onRemoveMember(scope.row, scope.$index)" type="danger">
+                            删除
+                        </el-button>
+
+                    </template>
+                </el-table-column>
+            </el-table>
+            <el-button size="small" type="primary" @click="onAddMember">
+                增加
+            </el-button>
+            <el-button size="small" type="warning" @click="onImport">重置</el-button>
+            <el-button size="small" type="primary" @click="onNextPage">下一页</el-button>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                memberColumns: [
+                    {
+                        prop: 'name',
+                        label: '姓名',
+                    },
+                    {
+                        prop: 'id',
+                        label: '工号',
+                    },
+                ],
+                memberSource: [],
+            },
+            computed: {
+                members: function () {
+                    return this.memberSource
+                        .filter(function (item) {
+                            return item.name && item.id;
+                        })
+                        .map(function (item) {
+                            return {
+                                name: item.name,
+                                id: item.id,
+                            };
+                        });
+                },
+            },
+            methods: {
+                onSaveCell: function (row, key) {
+                    this.$set(row.editing, key, false);
+                    this.saveData();
+                },
+                onEditCell: function (row, key, e) {
+                    this.$set(row.editing, key, true);
+                    const parent = e.target.parentNode;
+                    this.$nextTick(function () {
+                        // console.log(parent.innerHTML, row)
+                        parent.querySelector('input').focus();
+                    });
+                },
+                onAddMember: function () {
+                    this.memberSource.push({
+                        editing: {
+                            name: true,
+                        },
+                    });
+                },
+                onRemoveMember: function (row, index) {
+                    var vm = this;
+                    this.$confirm('删除不可撤销！可重新添加', '确定删除吗？', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }).then(function () {
+                        vm.memberSource.splice(index, 1);
+                        vm.saveData();
+                    });
+                },
+                onImport: function () {
+                    var vm = this;
+                    this.$confirm('重新导入会覆盖现有人员列表', '确定重置吗？', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }).then(function () {
+                        vm.memberSource = window.members.map(function (item) {
+                            return {
+                                name: item.name,
+                                id: item.id,
+                                editing: {},
+                            };
+                        });
+                        vm.saveData();
+                    });
+                },
+                onNextPage: function () {
+                    location.href = 'configAward.html';
+                },
+                saveData: function () {
+                    localStorage.setItem('members', JSON.stringify(this.members));
+                    localStorage.setItem('players', JSON.stringify(this.members));//奖池人员
+                },
+            },
+            created: function () {
+                var members = JSON.parse(localStorage.getItem('members')) || window.members;
+                this.memberSource = members.map(function (item) {
+                    return {
+                        name: item.name,
+                        id: item.id,
+                        editing: {},
+                    };
+                });
+                this.saveData();
+            },
+        });
+    </script>
+</body>
+
+</html>

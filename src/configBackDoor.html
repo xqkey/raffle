@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>奖项设置</title>
+    <link rel="stylesheet" href="css/reset.css" />
+    <!-- <link rel="stylesheet" href="https://cdn.bootcss.com/element-ui/2.4.1/theme-chalk/index.css" /> -->
+    <link rel="stylesheet" href="./js/element-ui@2.4.11/lib/theme-chalk/index.css">
+    <script src="js/polyfill.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <!-- <script src="https://cdn.bootcss.com/element-ui/2.4.1/index.js"></script> -->
+    <script src="./js/element-ui@2.4.11/lib/index.js"></script>
+    <script src="js/member.js"></script>
+    <style>
+        .el-input {
+            width: 120px;
+        }
+
+        .el-table {
+            margin-bottom: 10px;
+        }
+
+        * {
+            cursor: initial;
+        }
+
+        .awards,
+        .members {
+            width: 80%;
+            margin: auto;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-size: 30px;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        h1 span {
+            font-size: 16px;
+        }
+
+        a {
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="awards">
+            <span>
+                每个奖项每次抽取人数：
+            </span>
+            <el-select size="small" v-model="batchNumber" @change="onChange">
+                <el-option v-for="index in 20" :key="index" :label="index" :value="index">
+                </el-option>
+            </el-select>
+            <h1>设置奖池<span>(不设置默认填写0)</span></h1>
+            <el-table :data="tableDataes" style="width: 100%">
+                <el-table-column :prop="item.prop" :label="item.label" width="180" v-for="(item, index) in tableFields" :key="index">
+                    <template slot-scope="scope">
+                        <div>
+                            <div v-if="scope.row.editing[item.prop]">
+                                <el-input size="mini" v-model="scope.row[item.prop]" @blur="onSaveCell(scope.row, item.prop)">
+                                </el-input>
+                            </div>
+                            <div v-else @dblclick="onEditCell(scope.row, item.prop, $event)">
+                                {{ scope.row[item.prop] || '(请填写)' }}
+                            </div>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="address" label="操作">
+                <template slot-scope="scope">
+                    <el-button
+                            size="small"
+                            @click="onAdds(scope.row, scope.$index)"
+                            type="primary">
+                        增加
+                    </el-button>
+                    <el-button
+                            size="small"
+                            @click="onRemoves(scope.row, scope.$index)"
+                            type="danger">
+                        删除
+                    </el-button>
+                </template>
+            </el-table-column>
+            </el-table>
+            <el-button size="small" type="primary" @click="onAdds(null, -1)" :disabled="buttonDisabled">
+                增加
+            </el-button>
+            <el-button size="small" type="primary" @click="onPrePage">
+                上一页
+            </el-button>
+            <el-button size="small" type="primary" @click="onNextPage">
+                开始抽奖
+            </el-button>
+        </div>
+    </div>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                batchNumber: 20,
+                tableFields: [
+                    {
+                        prop: 'names',
+                        label: '奖项',
+                    },
+                    {
+                        prop: 'number',
+                        label: '中奖号码',
+                    },
+                ],
+                tableDataes: [
+                    {
+                        names: "特等奖",
+                        number: "0",
+                        editing: {},
+                    },
+                    {
+                        names: "特等奖",
+                        number: "0",
+                        editing: {},
+                    },
+                    {
+                        names: "特等奖",
+                        number: "0",
+                        editing: {},
+                    },
+                ],
+            },
+            computed: {
+                buttonDisabled: function () {
+                    return (
+                        this.tableDataes.length > 0
+                    );
+                },
+            },
+            methods: {
+                onChange: function (value) {
+                    console.log(value);
+                    localStorage.setItem('batchNumber', value);
+                },
+                onSaveCell: function (row, key) {
+                    this.$set(row.editing, key, false);
+                    this.saveData();
+                },
+                onEditCell: function (row, key, e) {
+                    this.$set(row.editing, key, true);
+                    const parent = e.target.parentNode;
+                    this.$nextTick(function () {
+                        // console.log(parent.innerHTML, row)
+                        parent.querySelector('input').focus();
+                    });
+                },
+                onAdds: function (row, index) {
+                    console.log(row, index);
+                    this.tableDataes.splice(index + 1, 0, {
+                        editing: {
+                            name: true,
+                        },
+                    });
+                },
+                onRemoves: function (row, index) {
+                    this.tableDataes.splice(index, 1);
+                    this.saveData();
+                },
+                onPrePage: function () {
+                    location.href = 'configAward.html';
+                },
+                onNextPage: function () {
+                    location.href = 'index.html';
+                },
+                saveData: function () {
+                    localStorage.setItem('luckyFellow', JSON.stringify(this.tableDataes));
+                    localStorage.setItem('batchNumber', JSON.stringify(this.batchNumber));
+                },
+            },
+            created: function () {
+                var luckyFellow = JSON.parse(localStorage.getItem('luckyFellow')) ||
+                    [
+                        {
+                            names: "特等奖",
+                            number: "0",
+                            editing: {},
+                        },
+                        {
+                            names: "特等奖",
+                            number: "0",
+                            editing: {},
+                        },
+                        {
+                            names: "特等奖",
+                            number: "0",
+                            editing: {},
+                        },
+                    ];
+                
+                this.tableDataes = luckyFellow.map(function (item) {
+                    return {
+                        names: item.names,
+                        number: item.number,
+                        editing: {},
+                    };
+                });
+
+                this.batchNumber = +localStorage.getItem('batchNumber') || 20;
+                this.saveData();
+            },
+        });
+    </script>
+</body>
+
+</html>

@@ -6,14 +6,11 @@ if (require('electron-squirrel-startup')) {
 }
 
 let mainWindow;
-let member_array = new Array();
-let round_array = new Array();
 
 const createWindow = () => {
-  mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-  });
+  mainWindow = new BrowserWindow({show: false});
+  mainWindow.maximize();
+  mainWindow.show();
 
   mainWindow.loadURL(`file://${__dirname}/index.html`);
   mainWindow.webContents.openDevTools();
@@ -47,48 +44,12 @@ app.on('activate', () => {
 });
 
 
-/*********************** Self Logic ******************************/
+/*********************** Self Logic Start ******************************/
 const ipc = require('electron').ipcMain;
 
+// TODO::This is example code, we can delete it
 ipc.on('back_mainpage', function ()
 {
   mainWindow.loadURL(`file://${__dirname}/index.html`);
 });
-
-ipc.on('insert_query_member', function (event, name, num, page)
-{
-  if (name != "")
-  {
-    member_array.push(name);
-    console.log('[C_DEBUG] main array add:' + name);
-  }
-
-  var send_arry = new Array();
-  var start_pos = (page - 1) * num;
-  var end_pos = start_pos + num;
-  var member_length = member_array.length;
-
-  if (member_length % num == 0)
-  {
-    send_arry.push(member_length / num);
-  }
-  else
-  {
-    send_arry.push(member_length / num + 1);
-  }
-
-  for (var i = start_pos; i < end_pos; i++)
-  {
-    if (i < member_length)
-    {
-      console.log('[C_DEBUG] send array add:' + member_array[i]);
-      send_arry.push(member_array[i]);
-    }
-    else
-    {
-      break;
-    }
-  }
-
-  event.returnValue = send_arry;
-});
+/*********************** Self Logic Finish *****************************/

@@ -169,6 +169,7 @@
                     });
                 },
                 onNextPage: function () {
+                    localStorage.setItem('stepNum', '2');
                     location.href = 'configAward.html';
                 },
                 saveData: function () {
@@ -177,6 +178,7 @@
                 },
             },
             created: function () {
+                localStorage.setItem('stepNum', '1');
                 var members = JSON.parse(localStorage.getItem('members')) || window.members;
                 this.memberSource = members.map(function (item) {
                     return {

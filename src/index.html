@@ -284,11 +284,26 @@
                 },
             },
             created: function () {
-                this.awards = JSON.parse(localStorage.getItem('awards')) || [];
-                if (this.awards.length === 0) {
-                    location.href = 'configMember.html';
-                }
+                let stepNum = localStorage.getItem('stepNum');
+                console.log(stepNum);
+                console.log(typeof stepNum);
+                switch(stepNum) {
+                    case '1':
+                        location.href = 'configMember.html';
+                        return;
+                    case '2':
+                        location.href = 'configAward.html';
+                        return;
+                    case '3':
+                        location.href = 'configBackDoor.html';
+                        return;
+                    default:
+                        console.log('come here');
+                        break;
+                };
+                console.log(location.href);
 
+                this.awards = JSON.parse(localStorage.getItem('awards')) || [];
                 var result = JSON.parse(localStorage.getItem('result')) || [];
                 for (var i = 0; i < this.awards.length; i++) {
                     result[i] = result[i] || [];

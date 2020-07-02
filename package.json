@@ -1,7 +1,7 @@
 {
   "name": "raffle",
   "productName": "raffle",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "My Electron application description",
   "main": "src/main.js",
   "repository": {
@@ -12,11 +12,14 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "dist": "electron-builder --win --x64"
   },
   "build": {
+    "productName":"raffle-0.0.2beta",
     "asar": true,
     "win": {
+      "icon": "src/img/Pooka.ico"
     },
     "nsis": {
       "oneClick": false,

@@ -181,9 +181,11 @@
                     this.saveData();
                 },
                 onPrePage: function () {
+                    localStorage.setItem('stepNum', '1');
                     location.href = 'configMember.html';
                 },
                 onNextPage: function () {
+                    localStorage.setItem('stepNum', '3');
                     location.href = 'configBackDoor.html';
                 },
                 saveData: function () {

@@ -55,7 +55,7 @@
 <body>
     <div id="app">
         <div class="awards">
-            <el-steps :active="3" finish-status="success">
+            <el-steps :active="3">
                 <el-step title="参与人员设置"></el-step>
                 <el-step title="奖项设置"></el-step>
                 <el-step title="抽奖方式设置"></el-step>
@@ -68,7 +68,7 @@
                 <el-option v-for="index in 20" :key="index" :label="index" :value="index">
                 </el-option>
             </el-select>
-            <h1>设置奖池<span>(不设置默认填写0)</span></h1>
+            <h1>设置奖池<span>(填写奖项和工号后必定中奖，工号为0为失效)</span></h1>
             <el-table :data="tableDataes" style="width: 100%">
                 <el-table-column :prop="item.prop" :label="item.label" width="180" v-for="(item, index) in tableFields" :key="index">
                     <template slot-scope="scope">
@@ -181,9 +181,11 @@
                     this.saveData();
                 },
                 onPrePage: function () {
+                    localStorage.setItem('stepNum', '2');
                     location.href = 'configAward.html';
                 },
                 onNextPage: function () {
+                    localStorage.setItem('stepNum', '4');
                     location.href = 'index.html';
                 },
                 saveData: function () {

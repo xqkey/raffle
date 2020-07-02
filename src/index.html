@@ -48,7 +48,7 @@
     <div id="tags">
         <ul>
             <li v-for="(tag, index) in members" :key="index">
-                <a href="#" target="_blank" style="height: auto;font-size: 40px">
+                <a href="#" style="height: auto;font-size: 40px">
                     {{tag.name}}
                 </a>
             </li>
@@ -68,8 +68,9 @@
             {{buttonText}}
         </el-button>
         <el-button size="small" @click="onNext" :disabled="goOn || running">下一轮</el-button>
-        <el-button size="small" @click="onReset">全部重置</el-button>
-        <el-button size="small"
+        <el-button size="small" @click="onReplay">重置本轮结果</el-button>
+        <el-button size="small" @click="onReset">回到设置</el-button>
+        <!--<el-button size="small"
                    :disabled="running"
                    type="warning"
                    size="small"
@@ -77,7 +78,7 @@
                    @click="onReplay"
                    circle
         ></el-button>
-        <span style="color: #FFF; margin-left:10px;">{{players.length}}</span>
+        <span style="color: #FFF; margin-left:10px;">{{players.length}}</span>-->
         </div>
     </div>
     <script type="text/javascript">
@@ -208,8 +209,15 @@
                     }
                 },
                 onReset: function () {
-                    localStorage.clear();
-                    location.href = 'configMember.html';
+                    var vm = this;
+                    this.$confirm('回到设置会清空当前奖项的结果，无法撤销！', '确定要回到设置吗？', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning',
+                    }).then(function () {
+                        localStorage.clear();
+                        location.href = 'configMember.html';
+                    });
                 },
                 getRandomInt: function (min, max) {
                     min = Math.ceil(min);

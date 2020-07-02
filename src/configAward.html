@@ -55,6 +55,12 @@
 <body>
     <div id="app">
         <div class="awards">
+            <el-steps :active="2">
+                <el-step title="参与人员设置"></el-step>
+                <el-step title="奖项设置"></el-step>
+                <el-step title="抽奖方式设置"></el-step>
+            </el-steps>
+            <br/>
             <h1>奖项设置 <span>（请按抽奖顺序添加）</span></h1>
             <el-table :data="tableData" style="width: 100%">
                 <el-table-column :prop="item.prop" :label="item.label" width="180" v-for="(item, index) in columns" :key="index">
@@ -86,10 +92,10 @@
                 增加
             </el-button>
             <el-button size="small" type="primary" @click="onPrePage">
-                上一页
+                上一步
             </el-button>
             <el-button size="small" type="primary" @click="onNextPage">
-                下一页
+                下一步
             </el-button>
         </div>
     </div>

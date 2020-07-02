@@ -55,13 +55,19 @@
 <body>
     <div id="app">
         <div class="members">
+            <el-steps :active="1">
+                <el-step title="参与人员设置"></el-step>
+                <el-step title="奖项设置"></el-step>
+                <el-step title="抽奖方式设置"></el-step>
+            </el-steps>
+            <br/>
             <h1>参与人员列表(共{{memberSource.length}}人)</h1>
             <el-table :data="memberSource" style="width: 100%" stripe>
                 <el-table-column :prop="item.prop" :label="item.label" width="180" v-for="(item, index) in memberColumns" :key="index">
                     <template slot-scope="scope">
                         <div>
                             <div v-if="scope.row.editing[item.prop]">
-                                <el-input size="mini" v-model="scope.row[item.prop]" @blur="onSaveCell(scope.row, item.prop)"></el-input>
+                                <el-input oninput="value=value.replace(/[^0-9.]/g,'')" size="mini" v-model="scope.row[item.prop]" @blur="onSaveCell(scope.row, item.prop)"></el-input>
                             </div>
                             <div v-else @dblclick="onEditCell(scope.row, item.prop, $event)">
                                 {{ scope.row[item.prop] || '(请填写)' }}
@@ -81,7 +87,7 @@
                 增加
             </el-button>
             <el-button size="small" type="warning" @click="onImport">重置</el-button>
-            <el-button size="small" type="primary" @click="onNextPage">下一页</el-button>
+            <el-button size="small" type="primary" @click="onNextPage">下一步</el-button>
         </div>
     </div>
     <script>

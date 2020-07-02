@@ -62,7 +62,7 @@
             </el-steps>
             <br/>
             <h1>参与人员列表(共{{memberSource.length}}人)</h1>
-            <el-table :data="memberSource" style="width: 100%" stripe>
+            <el-table :data="memberSourceTable" style="width: 100%" stripe>
                 <el-table-column :prop="item.prop" :label="item.label" width="180" v-for="(item, index) in memberColumns" :key="index">
                     <template slot-scope="scope">
                         <div>
@@ -83,6 +83,13 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <el-pagination
+                layout="prev, pager, next"
+                :total="memberSource.length"
+                :page-size="pagination.pageSize"
+                :current-page="pagination.currentPage"
+                @current-change="onChangePage">
+            </el-pagination>
             <el-button size="small" type="primary" @click="onAddMember">
                 增加
             </el-button>
@@ -96,15 +103,21 @@
             data: {
                 memberColumns: [
                     {
-                        prop: 'name',
-                        label: '姓名',
-                    },
-                    {
                         prop: 'id',
                         label: '工号',
                     },
+                    {
+                        prop: 'name',
+                        label: '姓名',
+                    },
                 ],
+                memberSourceTable: [],
                 memberSource: [],
+                pagination: {
+                    pageSize:10,
+                    currentPage:1,
+                    currentNum:0,
+                },
             },
             computed: {
                 members: function () {
@@ -176,9 +189,33 @@
                     localStorage.setItem('members', JSON.stringify(this.members));
                     localStorage.setItem('players', JSON.stringify(this.members));//奖池人员
                 },
+                updateTable: function () {
+                    this.memberSourceTable = [];
+                    let baseNum = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+                    for (let i = 0; i < this.pagination.currentNum ; i++) {
+                        this.memberSourceTable.push(this.memberSource[baseNum + i]);
+                    }
+                },
+                onChangePage: function (page) {
+                    this.pagination.currentPage = page;
+                    let baseNum1 = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+                    let baseNum2 = baseNum1 + this.pagination.pageSize;
+                    if (baseNum2 <= this.memberSource.length) {
+                        this.pagination.currentNum = this.pagination.pageSize;
+                    }
+                    else
+                    {
+                        this.pagination.currentNum = this.memberSource.length - baseNum1;
+                    }
+                    
+                    //console.log('current num:'+this.pagination.currentNum);
+                    //console.log('current page:'+this.pagination.currentPage);
+                    this.updateTable();
+                },
             },
             created: function () {
                 localStorage.setItem('stepNum', '1');
+
                 var members = JSON.parse(localStorage.getItem('members')) || window.members;
                 this.memberSource = members.map(function (item) {
                     return {
@@ -187,6 +224,19 @@
                         editing: {},
                     };
                 });
+
+                // 计算当前页的数量
+                this.pagination.currentNum = this.memberSource.length % this.pagination.pageSize;
+                if (this.pagination.currentNum === 0 && this.memberSource.length > 0) {
+                    this.pagination.currentNum = this.pagination.pageSize;
+                }
+                console.log('Init current num:' + this.pagination.currentNum);
+
+                // 计算当前页码
+                this.pagination.currentPage = (this.memberSource.length - this.pagination.currentNum) / this.pagination.pageSize + 1;
+                console.log('Init current page:' + this.pagination.currentPage);
+
+                this.updateTable();
                 this.saveData();
             },
         });

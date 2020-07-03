@@ -68,8 +68,26 @@
             {{buttonText}}
         </el-button>
         <el-button size="small" @click="onNext" :disabled="goOn || running">下一轮</el-button>
+        <el-button size="small" @click="dialogFormVisible = true" >新增奖项</el-button>
         <el-button size="small" @click="onReplay">重置本轮结果</el-button>
         <el-button size="small" @click="onReset">回到设置</el-button>
+        <el-dialog title="新增奖项" :visible.sync="dialogFormVisible">
+            <el-form :model="formModel" :rules="formRules" ref="formRef" status-icon label-position="left">
+                <el-form-item label="名称" prop="name">
+                    <el-input v-model="formModel.name" style="width:50%"></el-input>
+                </el-form-item>
+                <el-form-item label="数量" prop="count">
+                    <el-input v-model="formModel.count" style="width:50%"></el-input>
+                </el-form-item>
+                <el-form-item label="奖品" prop="award">
+                    <el-input v-model="formModel.award" style="width:50%"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="resetForm('formRef')">取 消</el-button>
+                <el-button type="primary" @click="submitForm('formRef')">确 定</el-button>
+            </div>
+        </el-dialog>
         <!--<el-button size="small"
                    :disabled="running"
                    type="warning"
@@ -77,14 +95,31 @@
                    class="el-icon-refresh"
                    @click="onReplay"
                    circle
-        ></el-button>
-        <span style="color: #FFF; margin-left:10px;">{{players.length}}</span>-->
+        ></el-button>-->
+        <span style="color: #FFF; margin-left:10px;">奖池中还剩：{{players.length}}人</span>
         </div>
     </div>
     <script type="text/javascript">
         new Vue({
             el: '#app',
             data: {
+                dialogFormVisible: false,
+                formModel: {
+                    name: '',
+                    count: '',
+                    award: '',
+                },
+                formRules: {
+                   name: [
+                       { required: true, message: '请输入奖项名称', trigger: 'blur' },
+                    ],
+                   count: [
+                       { required: true, message: '请输入获奖人数', trigger: 'blur' },
+                    ],
+                   award: [
+                       { required: true, message: '请输入奖品名称', trigger: 'blur' },
+                    ],
+                },
                 running: false,
                 awards: [],
                 currentAward: 0,
@@ -258,7 +293,7 @@
                     });
                 },
                 onKeyup: function (e) {
-                    console.log(e);
+                    //console.log(e);
                     // 空格或回车键
                     if (e.keyCode === 13 || e.keyCode === 32) {
                         this.$refs.action.$el.click();
@@ -282,6 +317,28 @@
                         localStorage.setItem('result', JSON.stringify(vm.result));
                     });
                 },
+                submitForm(formName) {
+                    this.$refs[formName].validate((valid) => {
+                        if (valid) {
+                            this.awards.push({
+                                name: this.formModel.name,
+                                count: this.formModel.count,
+                                award: this.formModel.award,
+                            });
+                            localStorage.setItem('awards', JSON.stringify(this.awards));
+                            this.result.push([]);
+                            this.dialogFormVisible = false;
+                            //location.href = 'index.html';
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                },
+                resetForm(formName) {
+                    this.$refs[formName].resetFields();
+                    this.dialogFormVisible = false;
+                },
             },
             created: function () {
                 let stepNum = localStorage.getItem('stepNum');
@@ -297,9 +354,11 @@
                     case '3':
                         location.href = 'configBackDoor.html';
                         return;
-                    default:
-                        console.log('come here');
+                    case '4':
                         break;
+                    default:
+                        location.href = 'configMember.html';
+                        return;
                 };
                 console.log(location.href);
 

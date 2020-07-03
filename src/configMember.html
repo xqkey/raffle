@@ -67,7 +67,7 @@
                     <template slot-scope="scope">
                         <div>
                             <div v-if="scope.row.editing[item.prop]">
-                                <el-input oninput="value=value.replace(/[^0-9.]/g,'')" size="mini" v-model="scope.row[item.prop]" @blur="onSaveCell(scope.row, item.prop)"></el-input>
+                                <el-input size="mini" v-model="scope.row[item.prop]" @blur="onSaveCell(scope.row, item.prop)"></el-input>
                             </div>
                             <div v-else @dblclick="onEditCell(scope.row, item.prop, $event)">
                                 {{ scope.row[item.prop] || '(请填写)' }}
@@ -90,9 +90,8 @@
                 :current-page="pagination.currentPage"
                 @current-change="onChangePage">
             </el-pagination>
-            <el-button size="small" type="primary" @click="onAddMember">
-                增加
-            </el-button>
+            <el-button size="small" type="primary" @click="onAddMember">增加一位</el-button>
+            <el-button size="small" type="primary" @click="onBatchAddMember">批量增加</el-button>
             <el-button size="small" type="warning" @click="onImport">重置</el-button>
             <el-button size="small" type="primary" @click="onNextPage">下一步</el-button>
         </div>
@@ -152,6 +151,55 @@
                             name: true,
                         },
                     });
+                    let baseNum1 = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+                    let baseNum2 = baseNum1 + this.pagination.pageSize;
+                    if (baseNum2 <= this.memberSource.length) {
+                        this.pagination.currentNum = this.pagination.pageSize;
+                    }
+                    else
+                    {
+                        this.pagination.currentNum = this.memberSource.length - baseNum1;
+                    }
+                    this.updateTable();
+                },
+                onBatchAddMember: function () {
+                    this.$prompt('请输需要增加的人数', '提示', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        inputPattern: /^[1-9]\d*$/,
+                        inputErrorMessage: '只能输入大于0的数字'
+                    }).then(({ value }) => {
+                        this.$message({
+                            type: 'success',
+                            message: '你添加的人数是: ' + value
+                        });
+
+                        let maxid = this.memberSource.reduce( (a, c, i) => c > a ? (indexOfMax = i, c.id) : a, 0);
+                        for (let i = 0; i < value; i++) {
+                            maxid += 1
+                            this.memberSource.push({
+                                name: maxid + '号',
+                                id: maxid,
+                                editing: {},
+                            });
+                        }
+
+                        let baseNum1 = (this.pagination.currentPage - 1) * this.pagination.pageSize;
+                        let baseNum2 = baseNum1 + this.pagination.pageSize;
+                        if (baseNum2 <= this.memberSource.length) {
+                            this.pagination.currentNum = this.pagination.pageSize;
+                        }
+                        else {
+                            this.pagination.currentNum = this.memberSource.length - baseNum1;
+                        }
+                        this.updateTable();
+                        this.saveData();
+                    }).catch(() => {
+                        this.$message({
+                            type: 'info',
+                            message: '取消输入'
+                        });
+                    });
                 },
                 onRemoveMember: function (row, index) {
                     var vm = this;
@@ -178,6 +226,19 @@
                                 editing: {},
                             };
                         });
+
+                        // 计算当前页的数量
+                        vm.pagination.currentNum = vm.memberSource.length % vm.pagination.pageSize;
+                        if (vm.pagination.currentNum === 0 && vm.memberSource.length > 0) {
+                            vm.pagination.currentNum = vm.pagination.pageSize;
+                        }
+                        console.log('Init current num:' + vm.pagination.currentNum);
+
+                        // 计算当前页码
+                        vm.pagination.currentPage = (vm.memberSource.length - vm.pagination.currentNum) / vm.pagination.pageSize + 1;
+                        console.log('Init current page:' + vm.pagination.currentPage);
+
+                        vm.updateTable();
                         vm.saveData();
                     });
                 },

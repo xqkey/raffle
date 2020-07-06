@@ -21,88 +21,92 @@
 
 <body>
     <div id="app" class="bg">
+        <div class="next title">
+            <span>
+                {{themeName}}
+            </span>
+        </div>
+        <br/>
+        <br/>
+        <br/>
         <div class="next title" v-if="awards.length>0">
             <span class="title">
-            {{awards[currentAward].name}}({{result[currentAward].length}}/{{awards[currentAward].count}})
-        </span>
+                {{awards[currentAward].name}}({{result[currentAward].length}}/{{awards[currentAward].count}})
+            </span>
             <span v-show="awards[currentAward].award">
-            <b>奖品：</b>{{awards[currentAward].award }}
-        </span
-        >
-    </div>
-    <div class="batch flexbox" v-show="!running && batchPlayers.length>0">
-        <div class="player" v-for="(item, index) in batchPlayers" :key="index" @click="onKick(item)">
-            {{item.name}}
+                <b>奖品：</b>{{awards[currentAward].award }}
+            </span>
         </div>
-    </div>
-    <div class="result" v-show="batchPlayers.length===0">
-        <div @click="onKick(item, index)" class="lucky-dog" v-for="(item, index) in result[currentAward]" :key="index">
-            {{item.name}}
-        </div>
-    </div>
-    <div id="myCanvasContainer">
-        <canvas width="300" height="300" id="myCanvas" ref="canvas">
-            <p>换个现代浏览器吧！</p>
-        </canvas>
-    </div>
-    <div id="tags">
-        <ul>
-            <li v-for="(tag, index) in members" :key="index">
-                <a href="#" style="height: auto;font-size: 40px">
-                    {{tag.name}}
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="buttons">
-        <el-select v-model="currentAward" size="small">
-            <el-option v-for="(item, index) in awards"
-                       :key="index"
-                       :label="item.name"
-                       :value="index"
-            ></el-option>
-        </el-select>
-        <el-button size="small" ref="action" :disabled="buttonDisabled" type="danger" @click="toggle">
-            <audio id="mainMusic" src="audio/main.mp3" loop autoplay="autoplay"></audio>
-            <audio id="winMusic" src="audio/win.mp3" autoplay></audio>
-            {{buttonText}}
-        </el-button>
-        <el-button size="small" @click="onNext" :disabled="goOn || running">下一轮</el-button>
-        <el-button size="small" @click="dialogFormVisible = true" >新增奖项</el-button>
-        <el-button size="small" @click="onReplay">重置本轮结果</el-button>
-        <el-button size="small" @click="onReset">回到设置</el-button>
-        <el-dialog title="新增奖项" :visible.sync="dialogFormVisible">
-            <el-form :model="formModel" :rules="formRules" ref="formRef" status-icon label-position="left">
-                <el-form-item label="名称" prop="name">
-                    <el-input v-model="formModel.name" style="width:50%"></el-input>
-                </el-form-item>
-                <el-form-item label="数量" prop="count">
-                    <el-input v-model="formModel.count" style="width:50%"></el-input>
-                </el-form-item>
-                <el-form-item label="奖品" prop="award">
-                    <el-input v-model="formModel.award" style="width:50%"></el-input>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="resetForm('formRef')">取 消</el-button>
-                <el-button type="primary" @click="submitForm('formRef')">确 定</el-button>
+        <div class="batch flexbox" v-show="!running && batchPlayers.length>0">
+            <div class="player" v-for="(item, index) in batchPlayers" :key="index" @click="onKick(item)">
+                {{item.name}}
             </div>
-        </el-dialog>
-        <!--<el-button size="small"
-                   :disabled="running"
-                   type="warning"
-                   size="small"
-                   class="el-icon-refresh"
-                   @click="onReplay"
-                   circle
-        ></el-button>-->
-        <span style="color: #FFF; margin-left:10px;">奖池中还剩：{{players.length}}人</span>
+        </div>
+        <div class="result" v-show="batchPlayers.length===0">
+            <div @click="onKick(item, index)" class="lucky-dog" v-for="(item, index) in result[currentAward]" :key="index">
+                {{item.name}}
+            </div>
+        </div>
+        <div id="myCanvasContainer">
+            <canvas width="300" height="300" id="myCanvas" ref="canvas">
+                <p>换个现代浏览器吧！</p>
+            </canvas>
+        </div>
+        <div id="tags">
+            <ul>
+                <li v-for="(tag, index) in members" :key="index">
+                    <a href="#" style="height: auto;font-size: 40px">
+                        {{tag.name}}
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="buttons">
+            <el-select v-model="currentAward" size="small">
+                <el-option v-for="(item, index) in awards" :key="index" :label="item.name" :value="index"></el-option>
+            </el-select>
+            <el-button size="small" ref="action" :disabled="buttonDisabled" type="danger" @click="toggle">
+                <audio id="mainMusic" src="audio/main.mp3" loop autoplay="autoplay"></audio>
+                <audio id="winMusic" src="audio/win.mp3" autoplay></audio>
+                {{buttonText}}
+            </el-button>
+            <el-button size="small" @click="onNext" :disabled="goOn || running">下一轮</el-button>
+            <el-button size="small" @click="dialogFormVisible = true">新增奖项</el-button>
+            <el-button size="small" @click="onReplay">重置本轮结果</el-button>
+            <el-button size="small" @click="onReset">回到设置</el-button>
+            <el-dialog title="新增奖项" :visible.sync="dialogFormVisible">
+                <el-form :model="formModel" :rules="formRules" ref="formRef" status-icon label-position="left">
+                    <el-form-item label="名称" prop="name">
+                        <el-input v-model="formModel.name" style="width:50%"></el-input>
+                    </el-form-item>
+                    <el-form-item label="数量" prop="count">
+                        <el-input v-model="formModel.count" style="width:50%"></el-input>
+                    </el-form-item>
+                    <el-form-item label="奖品" prop="award">
+                        <el-input v-model="formModel.award" style="width:50%"></el-input>
+                    </el-form-item>
+                </el-form>
+                <div slot="footer" class="dialog-footer">
+                    <el-button @click="resetForm('formRef')">取 消</el-button>
+                    <el-button type="primary" @click="submitForm('formRef')">确 定</el-button>
+                </div>
+            </el-dialog>
+            <!--<el-button size="small"
+                       :disabled="running"
+                       type="warning"
+                       size="small"
+                       class="el-icon-refresh"
+                       @click="onReplay"
+                       circle
+            ></el-button>-->
+            <span style="color: #FFF; margin-left:10px;">奖池中还剩：{{players.length}}人</span>
         </div>
     </div>
     <script type="text/javascript">
         new Vue({
             el: '#app',
             data: {
+                themeName: '',
                 dialogFormVisible: false,
                 formModel: {
                     name: '',
@@ -368,6 +372,7 @@
                     result[i] = result[i] || [];
                 }
                 this.result = result;
+                this.themeName = localStorage.getItem('themeName') || '';
             },
             mounted: function () {
                 // console.log(this);

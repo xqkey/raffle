@@ -62,9 +62,15 @@
             </el-steps>
             <br/>
             <span>
+                填写活动主题名称:
+            </span>
+            <el-input v-model="themeName" style="width:50%" @change="onChangeTheme"></el-input>
+            <br/>
+            <br/>
+            <span>
                 每个奖项每次抽取人数：
             </span>
-            <el-select size="small" v-model="batchNumber" @change="onChange">
+            <el-select size="small" v-model="batchNumber" style="width:50%" @change="onChange">
                 <el-option v-for="index in 20" :key="index" :label="index" :value="index">
                 </el-option>
             </el-select>
@@ -115,6 +121,7 @@
         new Vue({
             el: '#app',
             data: {
+                themeName: "",
                 batchNumber: 20,
                 tableFields: [
                     {
@@ -152,6 +159,9 @@
                 },
             },
             methods: {
+                onChangeTheme: function (value) {
+                    localStorage.setItem('themeName', this.themeName);
+                },
                 onChange: function (value) {
                     console.log(value);
                     localStorage.setItem('batchNumber', value);
@@ -189,6 +199,7 @@
                     location.href = 'index.html';
                 },
                 saveData: function () {
+                    localStorage.setItem('themeName', this.themeName);
                     localStorage.setItem('luckyFellow', JSON.stringify(this.tableDataes));
                     localStorage.setItem('batchNumber', JSON.stringify(this.batchNumber));
                 },
